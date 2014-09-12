@@ -192,7 +192,7 @@ class Bootloader
 	{
 		// Check to see if AssetMini exists.
 		// I am not expecting everyone to use it.
-		if (!class_exists('AssetMini')) return;
+		if (!class_exists('\AssetMini')) return;
 
 		/*
 		 * The WP_ENV comes from https://github.com/brad-jones/wordpress
@@ -203,11 +203,11 @@ class Bootloader
 		{
 			if (WP_ENV == 'local')
 			{
-				AssetMini::setDebug(true);
+				\AssetMini::setDebug(true);
 			}
 			else
 			{
-				AssetMini::setDebug(false);
+				\AssetMini::setDebug(false);
 			}
 		}
 
@@ -261,13 +261,13 @@ class Bootloader
 		if ($_SERVER['SCRIPT_NAME'] == '/index.php')
 		{
 			// Check to see if we have a 404 view
-			if (View::exists('errors.404'))
+			if (\View::exists('errors.404'))
 			{
 				// Give the router our custom 404
 				\Gears\Router::install
 				(
 					$this->paths['theme'].'/routes',
-					View::make('errors.404')
+					\View::make('errors.404')
 				);
 			}
 			else
