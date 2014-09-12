@@ -139,6 +139,20 @@ class Bootloader
 		// phantom session appearing in the database. Turned out to be wp-cron.
 		if (!isset($_GET['doing_wp_cron']))
 		{
+			/*
+			 * Most wordpress setups don't specfiy a collation
+			 * and the laravel db layer needs it to be explicity defined.
+			 * We will set a sesible default here.
+			 */
+			if (!defined('DB_COLLATE') || empty(DB_COLLATE))
+			{
+				$collate = 'utf8_unicode_ci';
+			}
+			else
+			{
+				$collate = DB_COLLATE;
+			}
+
 			\Gears\Session::install
 			(
 				[
@@ -148,7 +162,7 @@ class Bootloader
 					'username'  => DB_USER,
 					'password'  => DB_PASSWORD,
 					'charset'   => DB_CHARSET,
-					'collation' => DB_COLLATE,
+					'collation' => $collate,
 					'prefix'    => $GLOBALS['wpdb']->prefix,
 				],
 				'sessions',
