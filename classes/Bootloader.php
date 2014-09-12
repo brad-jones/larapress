@@ -11,11 +11,6 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-use ReflectionClass;
-use Gears\Session;
-use Gears\View;
-use Gears\Router;
-
 class Bootloader
 {
 	/**
@@ -71,7 +66,7 @@ class Bootloader
 		];
 
 		// We use some reflection here to hook into wordpress
-		foreach ((new ReflectionClass($this))->getMethods() as $method)
+		foreach ((new \ReflectionClass($this))->getMethods() as $method)
 		{
 			// Explode the method name
 			$parts = explode('_', $method->name);
@@ -144,7 +139,7 @@ class Bootloader
 		// phantom session appearing in the database. Turned out to be wp-cron.
 		if (!isset($_GET['doing_wp_cron']))
 		{
-			Gears\Session::install
+			\Gears\Session::install
 			(
 				[
 					'driver'    => 'mysql',
@@ -225,7 +220,7 @@ class Bootloader
 		$cache_path = $this->paths['theme'].'/views/cache';
 
 		// Install Blade
-		Gears\View::install($views_path, $cache_path);
+		\Gears\View::install($views_path, $cache_path);
 	}
 
 	/**
@@ -255,7 +250,7 @@ class Bootloader
 			if (View::exists('errors.404'))
 			{
 				// Give the router our custom 404
-				Gears\Router::install
+				\Gears\Router::install
 				(
 					$this->paths['theme'].'/routes',
 					View::make('errors.404')
@@ -264,7 +259,7 @@ class Bootloader
 			else
 			{
 				// Let the router handle the 404 it's self.
-				Gears\Router::install($this->paths['theme'].'/routes');
+				\Gears\Router::install($this->paths['theme'].'/routes');
 			}
 
 			// The router by default exits php after it has done it's thing.
