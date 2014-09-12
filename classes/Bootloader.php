@@ -12,6 +12,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 use ReflectionClass;
+use Gears\Session;
+use Gears\View;
+use Gears\Router;
 
 class Bootloader
 {
