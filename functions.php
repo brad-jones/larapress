@@ -11,12 +11,12 @@
 // -----------------------------------------------------------------------------
 ////////////////////////////////////////////////////////////////////////////////
 
-// Make sure we are being called inside the wordpress environment.
+// Make sure we are being called inside the WordPress environment.
 if (!defined('ABSPATH')) exit;
 
 /*
- * Some people may use this theme, seperate from my wordpress project.
- * For more info on the wordpress composer project, checkout:
+ * Some people may use this theme, separate from my WordPress project.
+ * For more info on the WordPress composer project, checkout:
  * 
  *     https://github.com/brad-jones/wordpress
  * 

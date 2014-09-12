@@ -17,14 +17,14 @@ class Bootloader
 	 * Property: booted
 	 * =========================================================================
 	 * This simply keeps track of if we have been booted or not.
-	 * We only want the constructor of this  class to run once.
+	 * We only want the constructor of this class to run once.
 	 */
 	private static $booted = false;
 
 	/**
 	 * Method: isBooted
 	 * =========================================================================
-	 * This tells the call er if we have been booted or not.
+	 * This tells the caller if we have been booted or not.
 	 * 
 	 * Parameters:
 	 * -------------------------------------------------------------------------
@@ -57,13 +57,6 @@ class Bootloader
 	{
 		// We only want this constructor to run once
 		if (self::$booted) return;
-
-		// Grab some paths for easy reference later on.
-		$this->paths =
-		[
-			'base' => ABSPATH,
-			'theme' => get_template_directory()
-		];
 
 		// We use some reflection here to hook into wordpress
 		foreach ((new \ReflectionClass($this))->getMethods() as $method)
@@ -229,12 +222,23 @@ class Bootloader
 	 */
 	public function install_blade()
 	{
-		// Define some paths
-		$views_path = $this->paths['theme'].'/views';
-		$cache_path = $this->paths['theme'].'/views/cache';
+		// Set the cache path
+		$cache_path = Paths::parentTheme().'/views/cache';
+
+		// Create our view paths array
+		$views_paths = [];
+
+		// Are we being run from a child theme?
+		if (Paths::currentTheme() != Paths::parentTheme())
+		{
+			$views_paths[] = Paths::currentTheme().'/views';
+		}
+
+		// Add our own views
+		$views_paths[] = Paths::parentTheme().'/views';
 
 		// Install Blade
-		\Gears\View::install($views_path, $cache_path);
+		\Gears\View::install($views_paths, $cache_path);
 	}
 
 	/**
@@ -260,21 +264,35 @@ class Bootloader
 		// wp-admin, wp-cron, wp-login, xmlrpc, etc should run as expected.
 		if ($_SERVER['SCRIPT_NAME'] == '/index.php')
 		{
+			// Are we being run from a child theme?
+			if (Paths::currentTheme() != Paths::parentTheme())
+			{
+				try
+				{
+					\Gears\Router::install(Paths::currentTheme().'/routes', false);
+				}
+				catch (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e)
+				{
+					// do nothing for now
+				}
+			}
+
 			// Check to see if we have a 404 view
 			if (\View::exists('errors.404'))
 			{
-				// Give the router our custom 404
-				\Gears\Router::install
-				(
-					$this->paths['theme'].'/routes',
-					\View::make('errors.404')
-				);
+				$notfound = \View::make('errors.404');
 			}
 			else
 			{
-				// Let the router handle the 404 it's self.
-				\Gears\Router::install($this->paths['theme'].'/routes');
+				$notfound = null;
 			}
+
+			/*
+			 * If the execution gets to here it means either there is no child
+			 * theme. Or that the child theme router returned a 404. Either way
+			 * we will now run a second router, pointing to our route files.
+			 */
+			\Gears\Router::install(Paths::parentTheme().'/routes', $notfound);
 
 			// The router by default exits php after it has done it's thing.
 			// Statements after here are pointless...
