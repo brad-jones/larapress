@@ -58,9 +58,6 @@ class Bootloader
 		// We only want this constructor to run once
 		if (self::$booted) return;
 
-		// Make sure we are being called inside the wordpress environment.
-		if (!defined('ABSPATH')) exit;
-
 		// Grab some paths for easy reference later on.
 		$this->paths =
 		[
@@ -163,7 +160,11 @@ class Bootloader
 	/**
 	 * Method: install_assetmini
 	 * =========================================================================
-	 * This installs the AssetMini minfication system.
+	 * Another one of my projects that I use often is AssetMini.
+	 * This installs the AssetMini minfication system if it exists.
+	 * For more info checkout:
+	 * 
+	 *     https://github.com/phpgearbox/assetmini
 	 *
 	 * Parameters:
 	 * -------------------------------------------------------------------------
@@ -175,14 +176,28 @@ class Bootloader
 	 */
 	public function install_assetmini()
 	{
-		if (WP_ENV == 'local')
+		// Check to see if AssetMini exists.
+		// I am not expecting everyone to use it.
+		if (!class_exists('AssetMini')) return;
+
+		/*
+		 * The WP_ENV comes from https://github.com/brad-jones/wordpress
+		 * Thus we can't assume it exists. But if it does we will use
+		 * it to our advantage.
+		 */
+		if (defined('WP_ENV'))
 		{
-			AssetMini::setDebug(true);
+			if (WP_ENV == 'local')
+			{
+				AssetMini::setDebug(true);
+			}
+			else
+			{
+				AssetMini::setDebug(false);
+			}
 		}
-		else
-		{
-			AssetMini::setDebug(false);
-		}
+
+		// Note we actually don't have to do anything to install AssetMini.
 	}
 
 	/**

@@ -17,7 +17,6 @@
 		"composer/installers": "*",
 		"gears/blade": "*",
 		"gears/router": "*",
-		"gears/session": "*",
-		"gears/assetmini": "*"
+		"gears/session": "*"
 	}
 }
