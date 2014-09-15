@@ -133,9 +133,9 @@ class Bootloader
 		if (!isset($_GET['doing_wp_cron']))
 		{
 			/*
-			 * Most wordpress setups don't specfiy a collation
-			 * and the laravel db layer needs it to be explicity defined.
-			 * We will set a sesible default here.
+			 * Most wordpress setups don't specify a collation
+			 * and the laravel db layer needs it to be explicitly defined.
+			 * We will set a sensible default here.
 			 */
 			if (!defined('DB_COLLATE') || empty(DB_COLLATE))
 			{
@@ -185,7 +185,7 @@ class Bootloader
 	{
 		// Check to see if AssetMini exists.
 		// I am not expecting everyone to use it.
-		if (!class_exists('\AssetMini')) return;
+		if (!class_exists('\Gears\AssetMini')) return;
 
 		/*
 		 * The WP_ENV comes from https://github.com/brad-jones/wordpress
@@ -196,15 +196,16 @@ class Bootloader
 		{
 			if (WP_ENV == 'local')
 			{
-				\AssetMini::setDebug(true);
+				\Gears\AssetMini::setDebug(true);
 			}
 			else
 			{
-				\AssetMini::setDebug(false);
+				\Gears\AssetMini::setDebug(false);
 			}
 		}
 
-		// Note we actually don't have to do anything to install AssetMini.
+		// Install asset mini globally, so we can call Asset::???()
+		\Gears\AssetMini::globalise();
 	}
 
 	/**
